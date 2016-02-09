@@ -1,6 +1,6 @@
 require 'rack'
 
-module NoFramework
+module ToyTrain
   class Application
     def initialize(&block)
       @routes = Routes.new
@@ -65,7 +65,7 @@ module NoFramework
           controller, action = handler[:to].split('#')
           klass = Object.const_get(controller.capitalize + 'Controller')
 
-          ->(env) { klass.new(Rack::Request.new(env)).action(action).call(env) }
+          klass.action(action)
         else
           handler
         end
@@ -100,16 +100,17 @@ module NoFramework
   end
 
   class Controller
-    def initialize(req)
-      @req = req
+    def self.action(name)
+      ->(env) { [200, {}, [new.dispatch(name, Rack::Request.new(env))]] }
     end
 
-    def action(name)
-      ->(env) { [200, {}, [send(name)]] }
+    def dispatch(action, request)
+      @request = request
+      send(action)
     end
 
     def params
-      @req.params
+      @request.params
     end
   end
 end

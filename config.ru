@@ -1,6 +1,6 @@
-require 'no_framework'
+require 'toy_train'
 
-class BlogController < NoFramework::Controller
+class BlogController < ToyTrain::Controller
   def index
     <<~END
     1. First post
@@ -14,7 +14,7 @@ class BlogController < NoFramework::Controller
   end
 end
 
-MyApp = NoFramework::Application.new do
+MyApp = ToyTrain::Application.new do
   root ->(env) { [200, {}, ['Hello, world!']] }
   get '/foo', ->(env) { [200, {}, ['foo']] }
   get '/blog', to: 'blog#index'
